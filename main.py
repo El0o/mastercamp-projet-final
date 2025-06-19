@@ -6,6 +6,9 @@ import feedparser as fp
 import requests as req
 import re
 from time import sleep
+import webbrowser
+import smtplib
+from email.mime.text import MIMEText
 
 ## Etape 1 - Extraction des Flux RSS
 
@@ -401,3 +404,65 @@ df_consolidated = df_consolidated.dropna(subset=['CVE_id'])
 
 # Convert dataframe to CSV
 df_consolidated.to_csv("DataFrame_Complet.csv", index=False, encoding='utf-8-sig')
+
+# Function to send an email
+def send_email(subject, body, to_email):
+    msg = MIMEText(body)
+    msg['Subject'] = subject
+    msg['From'] = 'riley.cormier37@ethereal.email'
+    msg['To'] = to_email
+    try:
+        with smtplib.SMTP('smtp.ethereal.email', 587) as server:
+            server.starttls()
+            server.login('riley.cormier37@ethereal.email', 'APvJGZdFEKnu22MSuQ')
+            server.sendmail('riley.cormier37@ethereal.email', to_email, msg.as_string())
+        print("Email sent successfully!")
+    except Exception as e:
+        print(f"Failed to send email: {e}")
+
+def check_critical_vulnerability(version, product):
+    # Load the DataFrame from the CSV file
+    df = pd.read_csv('DataFrame_Complet.csv')
+    print(f"Checking for critical vulnerabilities in {product} version {version}...")
+    filtre = (df['product'] == product) & (df['version'] == version) & (df["Base_severity"] == "CRITICAL")
+    liste_dicts = df[filtre].to_dict(orient="records")
+    if liste_dicts:
+        return True, liste_dicts[0]  # Return the first critical vulnerability found
+    else:
+        return False, None
+    
+
+def notify_clients():
+    # sample possible dictionnaire de clients avec leur abonnement associé
+    sample_clients = {
+    'ADOdb/< 5.22.9': [{'nom': 'Ken', 'prenom': 'Clark', 'email': 'clark.ken@email.net'}],
+    'Backup and Recovery/12.3.1': [{'nom': 'Dupont', 'prenom': 'Marie', 'email': 'marie.dupont@email.com'}],
+    'Excel/2019': [{'nom': 'Lemoine', 'prenom': 'Jean', 'email': 'jean.lemoine@email.com'}],
+    'AutoCAD/2022': [{'nom': 'Durand', 'prenom': 'Claire', 'email': 'claire.durand@email.com'}],
+    'Photoshop/2023.2': [{'nom': 'Durand', 'prenom': 'Claire', 'email': 'claire.durand@email.com'}],
+    'Apache Parquet Java/0': [{'nom': 'Martin', 'prenom': 'Louis', 'email': 'louis.martin@email.com'}],
+    'Git/2.44.0': [{'nom': 'Martin', 'prenom': 'Louis', 'email': 'louis.martin@email.com'}],
+    'Word/2021': [{'nom': 'Bernard', 'prenom': 'Emma', 'email': 'emma.bernard@email.com'}],
+    'Excel/2021': [{'nom': 'Bernard', 'prenom': 'Emma', 'email': 'emma.bernard@email.com'}],
+    'PowerPoint/2021': [{'nom': 'Bernard', 'prenom': 'Emma', 'email': 'emma.bernard@email.com'}]
+    }
+
+    # Iterate through each software and version in the sample clients
+    for software_version, clients in sample_clients.items():
+        software, version = software_version.split('/')
+        critical, vulnerability_info = check_critical_vulnerability(version, software)
+        
+        if critical:
+            for client in clients:
+                name = client['nom']
+                firstname = client['prenom']
+                to_email = client['email']
+                subject = f"{vulnerability_info['Title']} - Critical Vulnerability Alert"
+                body = f"Dear {firstname} {name},\n\nA critical vulnerability has been detected in {software} version {version}.\nCERTFR id : {vulnerability_info['Id']}\nSummary : {vulnerability_info['Summary']}\n  CVE : {vulnerability_info['CVE_id']}\n  Description : {vulnerability_info['Description']}\n  Vendor : {vulnerability_info['vendor']}\n	 Product : {vulnerability_info['product']}\n  Version : {vulnerability_info['version']}\nPlease take immediate action to secure your system."
+                print(f"Sending email to {firstname} {name} at {to_email}")
+                send_email(subject, body, to_email)
+
+notify_clients()
+# enter in ethereal.email the credentials used to send the email
+print("Use following credentials to check the email sent on 'https://ethereal.email': \nuser :'riley.cormier37@ethereal.email' \npassword : 'APvJGZdFEKnu22MSuQ')")
+# End of the script
