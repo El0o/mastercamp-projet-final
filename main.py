@@ -6,6 +6,11 @@ import feedparser as fp
 import requests as req
 import re
 from time import sleep
+import ssl
+
+### Fixed ValueError with ssl certificate not found
+if hasattr(ssl, '_create_unverified_context'):
+    ssl._create_default_https_context = ssl._create_unverified_context
 
 ## Etape 1 - Extraction des Flux RSS
 
