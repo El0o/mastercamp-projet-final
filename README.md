@@ -20,11 +20,9 @@ Projet réalisé dans le cadre du Mastercamp Efrei 2025. Il vise à mettre en pl
    mastercamp-projet-final-main/
    │
    ├── main.py # Script principal du projet
-   ├── main.ipynb # Version notebook pour exécution interactive
-   ├── machine_learning.ipynb # Analyse, modélisation, prédictions
-   ├── Visualisation_ANSSI.ipynb # Dashboards et représentations graphiques
-   ├── Alerte_email.ipynb # Script d'alerte en cas de détection
-   │
+   ├── TD_ANSSI.html
+   ├──TD_ANSSI.ipynb
+   ├──DEMO.mov
    ├── DataFrame_Complet.csv # Jeu de données pré-traité
    ├── Sujet_Projet_Mastercamp_2025.pdf # Cahier des charges initial
    └── contributions.txt # Répartition des rôles
