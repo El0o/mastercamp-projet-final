@@ -5,13 +5,13 @@ import pandas as pd
 import feedparser as fp
 import requests as req
 import re
-from time import sleep
 import ssl
+from time import sleep
 
 ### Fixed ValueError with ssl certificate not found
 if hasattr(ssl, '_create_unverified_context'):
     ssl._create_default_https_context = ssl._create_unverified_context
-import webbrowser
+
 import smtplib
 from email.mime.text import MIMEText
 
@@ -200,6 +200,7 @@ def normalize_version_string(s):
     patterns = [
         (r"(below|up to|prior to|before|less than)\s+(version\s+)?([\w\.\-\_]+)", r"<= \3"),
         (r"(above|later than|after|greater than)\s+(version\s+)?([\w\.\-\_]+)", r">= \3"),
+        (r"(version\s+)?([\w\.\-]+)\s*(to|\-)\s*([\w\.\-]+)", r">= \2 <= \4"),
         (r"\bversion\b", r""),
     ]
     normalized = s
@@ -208,22 +209,29 @@ def normalize_version_string(s):
     return normalized.strip()
 
 
+
 def process_version(version_dict):
     processed_version = []
-    version = version_dict["version"]
+    if not isinstance(version_dict, dict):
+        return []
+
+    version = version_dict.get("version")
     if version:
         if ',' in version:
-            processed_version += version.split(',')
-        if version_dict.get("lessThan"):
-            processed_version += [f"<= {version_dict['lessThan']}"]
-        if version_dict.get("greaterThan"):
-            processed_version += [f">= {version_dict['greaterThan']}"]
-        if not is_actually_null(version):
-            processed_version += [version]
+            split_versions = [v.strip() for v in version.split(',')]
+            processed_version += split_versions
+        else:
+            if not is_actually_null(version):
+                processed_version.append(version)
 
-        normalized_processed_version = [normalize_version_string(v) for v in processed_version]
-        return normalized_processed_version
-    return processed_version
+    if version_dict.get("lessThan"):
+        processed_version.append(f"<= {version_dict['lessThan']}")
+    if version_dict.get("greaterThan"):
+        processed_version.append(f">= {version_dict['greaterThan']}")
+
+    normalized_processed_version = [normalize_version_string(v) for v in processed_version]
+    return normalized_processed_version
+
 
 
 def get_affected_products(cna_adp):
@@ -409,6 +417,9 @@ df_consolidated = df_consolidated.dropna(subset=['CVE_id'])
 
 # Convert dataframe to CSV
 df_consolidated.to_csv("DataFrame_Complet.csv", index=False, encoding='utf-8-sig')
+
+
+## Etape 8 - Génération d'Alertes et Notifications Email
 
 # Function to send an email
 def send_email(subject, body, to_email):
