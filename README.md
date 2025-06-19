@@ -20,8 +20,8 @@ Projet réalisé dans le cadre du Mastercamp Efrei 2025. Il vise à mettre en pl
    mastercamp-projet-final-main/
    │
    ├── main.py # Script principal du projet
-   ├── TD_ANSSI.html
-   ├──TD_ANSSI.ipynb
+   ├── TD_ANSSI.html # Exportation HTML
+   ├──TD_ANSSI.ipynb # Jupyter Notebook
    ├──DEMO.mov
    ├── DataFrame_Complet.csv # Jeu de données pré-traité
    ├── Sujet_Projet_Mastercamp_2025.pdf # Cahier des charges initial
