@@ -19,8 +19,7 @@ mastercamp-projet-final-main/
 │
 ├── main.py # Script principal du projet
 ├── main.ipynb # Version notebook pour exécution interactive
-├── machine_learning.ipynb # Analyse, modélisation, prédictions
-├── Visualisation_ANSSI.ipynb # Dashboards et représentations graphiques
+├── TD_ANSSI.ipynb # Analyse, modélisation, prédictions & Dashboards et représentations graphiques
 ├── Alerte_email.ipynb # Script d'alerte en cas de détection
 │
 ├── DataFrame_Complet.csv # Jeu de données pré-traité
