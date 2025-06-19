@@ -76,5 +76,13 @@ Le projet peut être enrichi avec :
 
 - Un déploiement sous forme de dashboard web (Streamlit, Dash)
 
+---
+## Contribution
+
+- Cerruti Maxime 20%
+- Duflaut Elodie 30%
+- Dommergue Camille 30%
+- Damas Laura 20%
+
 
 
